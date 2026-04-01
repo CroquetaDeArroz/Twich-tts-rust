@@ -1,0 +1,36 @@
+services:
+  bot-tts:
+    build: .
+    container_name: twitch-tts-bot
+
+    # ── Audio ──────────────────────────────────────────────────────
+    devices:
+      - /dev/snd:/dev/snd
+    volumes:
+      - tts-config:/root/.config/twitch-tts
+      - /run/user/1000/pulse:/run/user/1000/pulse  # PulseAudio socket del host
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+  config-ui:
+    build: .
+    container_name: twitch-tts-config
+    command: ./config-ui
+    devices:
+      - /dev/snd:/dev/snd
+    volumes:
+      - tts-config:/root/.config/twitch-tts
+      - /run/user/1000/pulse:/run/user/1000/pulse
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+    stdin_open: true
+    tty: true
+    profiles:
+      - config
+
+volumes:
+  tts-config:

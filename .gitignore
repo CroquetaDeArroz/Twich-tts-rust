@@ -1,0 +1,20 @@
+# ── Rust ──────────────────────────────────
+/target/
+Cargo.lock        # descomenta esta línea si es una librería (no un binario)
+
+# ── Piper y modelos de voz (pesados, no van en git) ──
+files/piper/
+
+# ── Config con tokens (¡nunca al repo!) ──
+*.json
+!package.json     # por si acaso hubiera algún json que SÍ quieras subir
+
+# ── Archivos temporales de audio ──
+*.wav
+*.mp3
+
+# ── Sistema ───────────────────────────────
+.DS_Store
+*.swp
+*.swo
+.env
