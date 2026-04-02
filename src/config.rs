@@ -11,7 +11,8 @@ pub struct Config {
     pub motor_tts: String,
     pub piper_modelo: String,
     pub longitud_max: usize,
-    pub alsa_card: u8,         // número de tarjeta de sonido (0, 1, 2...)
+    pub alsa_card: u8,
+    pub anunciar_usuario: bool,
 }
 
 impl Default for Config {
@@ -25,6 +26,7 @@ impl Default for Config {
             piper_modelo: "./piper/es_ES-sharvard-medium.onnx".to_string(),
             longitud_max: 120,
             alsa_card: 0,
+            anunciar_usuario: true,
         }
     }
 }

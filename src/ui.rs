@@ -38,6 +38,7 @@ enum Campo {
     PiperModelo,
     LongitudMax,
     AlsaCard,
+    AnunciarUsuario,
 }
 
 const CAMPOS: &[Campo] = &[
@@ -49,6 +50,7 @@ const CAMPOS: &[Campo] = &[
     Campo::PiperModelo,
     Campo::LongitudMax,
     Campo::AlsaCard,
+    Campo::AnunciarUsuario,
 ];
 
 // ── Estado de la app ─────────────────────────────────────────────────────────
@@ -103,6 +105,8 @@ impl App {
                     .unwrap_or("desconocida");
                 format!("card{}  ({})", self.cfg.alsa_card, nombre)
             }
+            Campo::AnunciarUsuario => if self.cfg.anunciar_usuario { "activado".to_string() } else { "desactivado".to_string() },
+
         }
     }
 
@@ -116,6 +120,7 @@ impl App {
             Campo::PiperModelo => "Modelo Piper",
             Campo::LongitudMax => "Long. máxima",
             Campo::AlsaCard    => "Tarjeta audio",
+            Campo::AnunciarUsuario => "Anunciar user",
         }
     }
 
@@ -129,6 +134,7 @@ impl App {
             Campo::PiperModelo => "Ruta al archivo .onnx del modelo de voz",
             Campo::LongitudMax => "← → para ajustar  |  máx. caracteres por mensaje",
             Campo::AlsaCard    => "← → para seleccionar tarjeta de sonido",
+            Campo::AnunciarUsuario => "← → para activar/desactivar  |  lee \"usuario dice ...\"",
         }
     }
 
@@ -178,6 +184,9 @@ impl App {
                     self.cfg.alsa_card = self.tarjetas_alsa[nuevo].0;
                 }
             }
+            Campo::AnunciarUsuario => {    
+                self.cfg.anunciar_usuario = !self.cfg.anunciar_usuario;
+            }
             _ => {}
         }
     }
@@ -207,6 +216,9 @@ impl App {
                     let nuevo = (idx + 1) % self.tarjetas_alsa.len();
                     self.cfg.alsa_card = self.tarjetas_alsa[nuevo].0;
                 }
+            }
+            Campo::AnunciarUsuario => {          
+                self.cfg.anunciar_usuario = !self.cfg.anunciar_usuario;
             }
             _ => {}
         }

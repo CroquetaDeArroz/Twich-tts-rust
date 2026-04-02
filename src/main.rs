@@ -48,13 +48,14 @@ fn generar_piper(texto: &str, modelo: &str) -> bool {
     }
 }
 
-fn reproducir_wav(ruta: &str, _card: u8) {
-    // Usamos paplay (PulseAudio) para respetar el dispositivo de salida del sistema
+fn reproducir_wav(ruta: &str, _card: u8, volumen: f32) {
+    let pulse_vol = ((volumen * 65536.0) as u32).clamp(0, 131072);
+
     let resultado = Command::new("paplay")
         .arg(ruta)
+        .arg(format!("--volume={}", pulse_vol))
         .status();
 
-    // Fallback a aplay si PulseAudio no está disponible
     if resultado.is_err() {
         let _ = Command::new("aplay").arg(ruta).status();
     }
@@ -64,7 +65,7 @@ fn reproducir_tts(texto: &str, volumen: f32, motor: &str, modelo: &str, card: u8
     println!("🔊 [{motor}] ({:.0}%) {texto}", volumen * 100.0);
 
     if motor == "piper" && generar_piper(texto, modelo) {
-        reproducir_wav(AUDIO_TMP, card);
+        reproducir_wav(AUDIO_TMP, card, volumen);
         return;
     }
 
@@ -76,7 +77,7 @@ fn reproducir_tts(texto: &str, volumen: f32, motor: &str, modelo: &str, card: u8
             texto.replace('\'', " ")
         ))
         .output();
-    reproducir_wav("/tmp/tts_fb.mp3", card);
+    reproducir_wav("/tmp/tts_fb.mp3", card, volumen);
 }
 
 fn parsear_mensaje(linea: &str) -> Option<(String, String)> {
@@ -164,12 +165,18 @@ fn main() {
                 }
                 continue;
             }
-
+            
             if texto.len() > cfg.longitud_max { continue; }
             if texto.contains("://")          { continue; }
             if texto.starts_with('!')         { continue; }
+            
+            let mensaje = if cfg.anunciar_usuario {
+                format!("{usuario} dice {texto}")
+            } else {
+                texto.to_string()
+            };
 
-            cola.lock().unwrap().meter(format!("{usuario} dice {texto}"));
+            cola.lock().unwrap().meter(mensaje);
         }
     }
 }
