@@ -66,6 +66,10 @@ RUN wget -q "${BASE_URL}/es_ES-sharvard-medium.onnx"      -O /app/files/piper/es
 # Variable de entorno para que main.rs encuentre Piper
 ENV PIPER_DIR=/app/files/piper/piper
 
+# ── Voces de referencia para XTTS-v2 ──────────────────────────────
+# WAVs de ~10s incluidos en el repo, usados por los perfiles Coqui
+COPY voices/ /app/voices/
+
 # La config se guarda en ~/.config/twitch-tts/config.json dentro del contenedor
 # Se monta como volumen para que persista entre reinicios
 
